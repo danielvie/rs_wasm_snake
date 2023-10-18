@@ -1,0 +1,109 @@
+
+
+#[derive(Debug)]
+enum PersonId {
+    Passport(u32),
+    IndentityCard(u32, u32),
+}
+
+trait Log {
+    fn display_info(&self);
+    fn alert_something(&self) {
+        println!("Default implementation of alert");
+    }
+}
+
+struct Person {
+    name: String,
+    last_name: String,
+    age: u32,
+    id: PersonId
+}
+
+struct Animal(String);
+
+impl Log for Animal {
+    fn display_info(&self) {
+        println!("{}", self.0);
+    }
+    
+    fn alert_something(&self) {
+        println!("woooof");
+    }
+}
+
+impl Log for Person {
+    fn display_info(&self) {
+        println!("{} {}; {}; {:?}", self.name, self.last_name, self.age, self.id);
+    }
+}
+
+
+
+impl Person {
+    fn new() -> Person {
+        Person {
+            name: "Default".to_string(),
+            last_name: "Default".to_string(),
+            age: 0,
+            id: PersonId::Passport(89234)
+        }
+    }
+    
+    fn _from(name: String, last_name: String, age: u32, id: PersonId) -> Person {
+        Person {
+            name,
+            last_name,
+            age,
+            id
+        }
+    }
+}
+
+fn main() {
+
+    let person = Person::new();
+    let animal = Animal("dog".to_string());
+    
+    person.display_info();
+    animal.display_info();
+    
+    log_info(&person);
+    log_info(&animal);
+    log_info_2(&animal);
+}
+
+// impl makes the compiler determine type at the compile time
+fn log_info(val: &impl Log) {
+    val.alert_something();
+}
+
+// dyun says that the fucntion should perform dynamic dispatch
+// decission of exactly which function to call at the runtime
+fn log_info_2(val: &dyn Log) {
+    val.alert_something();
+}
+
+
+// cargo run
+//    Compiling rs_udemy_wasm v0.1.0 (/Users/danielvieira/Sandbox/RUST/rs_udemy_wasm)
+// warning: variant `IndentityCard` is never constructed
+//  --> src/main.rs:6:5
+//   |
+// 4 | enum PersonId {
+//   |      -------- variant in this enum
+// 5 |     Passport(u32),
+// 6 |     IndentityCard(u32, u32),
+//   |     ^^^^^^^^^^^^^
+//   |
+//   = note: `PersonId` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+//   = note: `#[warn(dead_code)]` on by default
+
+// warning: `rs_udemy_wasm` (bin "rs_udemy_wasm") generated 1 warning
+//     Finished dev [unoptimized + debuginfo] target(s) in 0.09s
+//      Running `/Users/danielvieira/Sandbox/RUST/rs_udemy_wasm/target/debug/rs_udemy_wasm`
+// Default Default; 0; Passport(89234)
+// dog
+// Default implementation of alert
+// woooof
+// woooof
