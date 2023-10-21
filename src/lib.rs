@@ -1,4 +1,3 @@
-use rand::Rng;
 use wasm_bindgen::prelude::*;
 
 // Use `wee_alloc` as the global allocator.
@@ -28,13 +27,11 @@ pub struct World {
 
 #[wasm_bindgen]
 impl World {
-  pub fn new() -> World {
-    let mut rng = rand::thread_rng();
-    let width = 8;
+  pub fn new(width: usize, snake_idx: usize) -> World {
     World {
       width,
       size: width * width,
-      snake: Snake::new(rng.gen_range(0..8*8))
+      snake: Snake::new(snake_idx)
     }
   }
   
