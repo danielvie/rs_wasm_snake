@@ -1,7 +1,7 @@
 
 async function init() {
 
-  const memory = WebAssembly.Memory({initial: 1})
+  const memory = new WebAssembly.Memory({initial: 1})
 
   const importObject = {
     js: {
@@ -22,9 +22,7 @@ async function init() {
   const wasm = await WebAssembly.instantiate(buffer, importObject);
 
   const sumFunction = wasm.instance.exports.sum
-  const wasmMemory = wasm.instance.exports.mem
-  const uint8Array = new Uint8Array(wasmMemory.buffer, 0, 7)
-  
+  const uint8Array = new Uint8Array(memory.buffer, 0, 7)
   const hiText = new TextDecoder().decode(uint8Array)  
   console.log(hiText)
 
