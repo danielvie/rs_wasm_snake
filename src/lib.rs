@@ -5,14 +5,15 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-pub fn greet(name: &str) {
-    // println!("Hi there {}", name);
-    alert(name);
+pub struct World {
+    pub width: usize,
 }
 
 #[wasm_bindgen]
-extern {
-    pub fn alert(s: &str);
+impl World {
+    pub fn new() -> World {
+        World {
+            width: 8
+        }
+    }
 }
-
-// wasm-pack build --target web
