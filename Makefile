@@ -5,3 +5,7 @@ i:
 
 r:
 	cargo run
+	
+	
+b:
+	wasm-pack build --target web
