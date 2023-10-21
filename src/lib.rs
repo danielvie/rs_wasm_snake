@@ -22,6 +22,7 @@ impl Snake {
 #[wasm_bindgen]
 pub struct World {
     pub width: usize,
+    size: usize,
     snake: Snake
 }
 
@@ -29,8 +30,10 @@ pub struct World {
 impl World {
   pub fn new() -> World {
     let mut rng = rand::thread_rng();
+    let width = 8;
     World {
-      width: 8,
+      width,
+      size: width * width,
       snake: Snake::new(rng.gen_range(0..8*8))
     }
   }
@@ -41,5 +44,10 @@ impl World {
 
   pub fn snake_head_idx(&self) -> usize {
     self.snake.body[0].0
+  }
+  
+  pub fn update(&mut self) {
+    let snake_idx = self.snake_head_idx();
+    self.snake.body[0].0 = (snake_idx + 1) % self.size;
   }
 }
