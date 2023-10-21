@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wasm</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <script src="./index.js"></script>    
+</body>
+</html>
+
+<!-- we can either create memory in WebAssembly and export it to JS -->
+<!-- we can create memory in JS and import it to WebAssembly -->
+<!-- 1 means -> 1 page of memory, page has aroung 64kb -->
+<!-- compile: https://webassembly.github.io/wabt/demo/wat2wasm/ -->
+
+<!-- (module
+    (import "console" "log" (func $log))
+    (import "console" "error" (func $error))
+    (memory $mem 1)
+    (data (i32.const 0) "Hi you!")
+    (func $sum (param $a i32) (param $b i32) (result i32)
+        call $log
+        call $error
+        call $error
+        local.get $a
+        local.get $b
+        i32.add
+    )
+    (export "sum" (func $sum))
+) -->
+
