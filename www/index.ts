@@ -6,13 +6,15 @@ init().then(_ => {
   const world = World.new()
   const worldWidth =  world.width()
 
-  const canvas = document.getElementById('snake-canvas')
+  const canvas = document.getElementById('snake-canvas') as HTMLCanvasElement
   const ctx = canvas.getContext("2d")
   
   canvas.height = worldWidth * CELL_SIZE
   canvas.width = worldWidth * CELL_SIZE
   
   function drawWorld() {
+    if (!ctx) return;
+
     ctx.beginPath()
     
     for (let x = 0; x < worldWidth + 1; x++) {
@@ -29,6 +31,8 @@ init().then(_ => {
   }
   
   function drawSnake() {
+    if (!ctx) return;
+
     const snakeIdx = world.snake_head_idx()
     const col = snakeIdx % worldWidth
     const row = Math.floor(snakeIdx / worldWidth)
