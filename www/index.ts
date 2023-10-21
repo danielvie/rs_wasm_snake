@@ -47,13 +47,20 @@ init().then(_ => {
     ctx.stroke()
   }
   
-  drawWorld()
-  drawSnake()
-
-  setInterval(() => {
-    ctx?.clearRect(0, 0, canvas.width, canvas.height)
+  function paint() {
     drawWorld()
     drawSnake()
-    world.update()
-  }, 200)
+  }
+  
+  function update() {
+    setTimeout(() => {
+      ctx?.clearRect(0, 0, canvas.width, canvas.height)
+      world.update()
+      paint()
+      requestAnimationFrame(update)
+    }, 2000)
+  }
+  
+  paint()
+  update()
 })
