@@ -2,7 +2,7 @@ import init, { World } from "snake_game"
 
 init().then(_ => {
 
-  const CELL_SIZE = 20;
+  const CELL_SIZE = 40;
   const world = World.new()
   const worldWidth =  world.width()
 
@@ -28,5 +28,6 @@ init().then(_ => {
     ctx.stroke()
   }
   
+  console.log(world.snake_head_idx())
   drawWorld()
 })
