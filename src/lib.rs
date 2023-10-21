@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use wasm_bindgen::prelude::*;
 
 // Use `wee_alloc` as the global allocator.
