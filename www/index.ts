@@ -21,6 +21,7 @@ init().then(_ => {
 
     ctx.beginPath()
     
+    ctx.strokeStyle = '#aaa'
     for (let x = 0; x < worldWidth + 1; x++) {
       ctx.moveTo(CELL_SIZE * x, 0)
       ctx.lineTo(CELL_SIZE * x, worldWidth * CELL_SIZE)
@@ -42,6 +43,7 @@ init().then(_ => {
     const row = Math.floor(snakeIdx / worldWidth)
     
     ctx.beginPath()
+    ctx.fillStyle = '#6699ff'
     ctx.fillRect(
       col * CELL_SIZE, 
       row * CELL_SIZE, 
