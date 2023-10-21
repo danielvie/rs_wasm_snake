@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use wasm_bindgen::prelude::*;
 
 // Use `wee_alloc` as the global allocator.
@@ -11,9 +13,13 @@ pub struct World {
 
 #[wasm_bindgen]
 impl World {
-    pub fn new() -> World {
-        World {
-            width: 8
-        }
+  pub fn new() -> World {
+    World {
+      width: 8
     }
+  }
+
+  pub fn width(&self) -> usize {
+    self.width
+  }
 }
