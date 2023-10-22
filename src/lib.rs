@@ -74,6 +74,10 @@ impl World {
     self.snake.body.len()
   }
   
+  pub fn oopsie(&mut self) {
+    self.snake.body = vec![SnakeCell(2048)];
+  }
+  
   // cannot return a reference to javascript because of borrowing rules
   // pub fn snake_cells(&self) -> &Vec<SnakeCell> {
   //   &self.snake.body
