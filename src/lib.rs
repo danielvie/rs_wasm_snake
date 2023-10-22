@@ -13,7 +13,7 @@ pub enum Direction {
   Left
 }
 
-struct SnakeCell(usize);
+pub struct SnakeCell(usize);
 
 struct Snake {
   body: Vec<SnakeCell>,
@@ -21,9 +21,15 @@ struct Snake {
 }
 
 impl Snake {
-  fn  new(spawn_index: usize) -> Snake {
+  fn  new(spawn_index: usize, size: usize) -> Snake {
+    let mut body = vec!();
+    
+    for i in 0..size {
+      body.push(SnakeCell(spawn_index - i));
+    }
+
     Snake {
-      body: vec!(SnakeCell(spawn_index)),
+      body,
       direction: Direction::Right
     }
   }
@@ -42,7 +48,7 @@ impl World {
     World {
       width,
       size: width * width,
-      snake: Snake::new(snake_idx)
+      snake: Snake::new(snake_idx, 3)
     }
   }
   
@@ -58,6 +64,21 @@ impl World {
     self.snake.direction = direction;
   }
   
+  // *const is raw pointer
+  // borrowing rules doesnt apply to it
+  pub fn snake_cells(&self) -> *const SnakeCell {
+    self.snake.body.as_ptr()
+  }
+  
+  pub fn snake_lenght(&self) -> usize {
+    self.snake.body.len()
+  }
+  
+  // cannot return a reference to javascript because of borrowing rules
+  // pub fn snake_cells(&self) -> &Vec<SnakeCell> {
+  //   &self.snake.body
+  // }
+
   pub fn update(&mut self) {
     let snake_idx = self.snake_head_idx();
     let (row, col) = self.index_to_cell(snake_idx);
