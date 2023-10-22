@@ -89,7 +89,7 @@ init().then(wasm => {
     const fps = 3
     setTimeout(() => {
       ctx?.clearRect(0, 0, canvas.width, canvas.height)
-      world.update()
+      world.step()
       paint()
       requestAnimationFrame(update)
     }, 1000 / fps)
