@@ -61,10 +61,11 @@ init().then(wasm => {
       world.snake_lenght()
     )
     
-    ctx.fillStyle = '#6699ff'
-    snakeCells.forEach(cellIdx => {
+    snakeCells.forEach((cellIdx, i) => {
       const col = cellIdx % worldWidth
       const row = Math.floor(cellIdx / worldWidth)
+      
+      ctx.fillStyle = i === 0 ? "#7878bd" : "#6699ff"
       
       ctx.beginPath()
       ctx.fillRect(
