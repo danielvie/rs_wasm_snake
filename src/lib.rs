@@ -4,8 +4,9 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+#[wasm_bindgen]
 #[derive(PartialEq)]
-enum Direction {
+pub enum Direction {
   Up,
   Right,
   Down,
@@ -23,7 +24,7 @@ impl Snake {
   fn  new(spawn_index: usize) -> Snake {
     Snake {
       body: vec!(SnakeCell(spawn_index)),
-      direction: Direction::Down
+      direction: Direction::Right
     }
   }
 }
@@ -53,29 +54,42 @@ impl World {
     self.snake.body[0].0
   }
   
+  pub fn change_snake_dir(&mut self, direction: Direction) {
+    self.snake.direction = direction;
+  }
+  
   pub fn update(&mut self) {
     let snake_idx = self.snake_head_idx();
-    let row = snake_idx / self.width;
-    let col = snake_idx % self.width;
-    
-    match self.snake.direction {
+    let (row, col) = self.index_to_cell(snake_idx);
+
+    let (row, col) = match self.snake.direction {
       Direction::Right => {
-        let next_col = (col + 1) % self.width;
-        self.snake.body[0].0 = (row * self.width) + next_col;
+        (row, (col + 1) % self.width)
       },
       Direction::Left => {
-        let next_col = (col - 1) % self.width;
-        self.snake.body[0].0 = (row * self.width) + next_col;
+        (row, (col - 1) % self.width)
       },
       Direction::Up => {
-        let next_row = (row - 1) % self.width;
-        self.snake.body[0].0 = (next_row * self.width) + col;
+        ((row - 1) % self.width, col)
       },
       Direction::Down => {
-        let next_row = (row + 1) % self.width;
-        self.snake.body[0].0 = (next_row * self.width) + col;
+        ((row + 1) % self.width, col)
       },
-    }
+    };
     
+    let next_idx = self.cell_to_index(row, col);
+    self.set_snake_head(next_idx);
+  }
+  
+  fn set_snake_head(&mut self, idx: usize) {
+    self.snake.body[0].0 = idx;
+  }
+  
+  fn index_to_cell(&self, idx: usize) -> (usize, usize) {
+    (idx / self.width, idx % self.width)
+  }
+  
+  fn cell_to_index(&self, row: usize, col: usize) -> usize {
+    (row * self.width) + col
   }
 }
