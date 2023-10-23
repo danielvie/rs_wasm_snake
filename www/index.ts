@@ -9,6 +9,7 @@ init().then((wasm) => {
   const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
   const worldWidth = world.width();
 
+  const gameStatus = document.getElementById("game-status");
   const gameControlBtn = document.getElementById("game-control-btn");
   const canvas = document.getElementById("snake-canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
@@ -63,6 +64,14 @@ init().then((wasm) => {
     ctx.stroke();
   }
 
+  function drawGameStatus() {
+    if (!gameStatus) {
+      return;
+    }
+
+    gameStatus.textContent = world.game_status_text();
+  }
+
   function drawReward() {
     if (!ctx) return;
 
@@ -108,6 +117,7 @@ init().then((wasm) => {
     drawWorld();
     drawSnake();
     drawReward();
+    drawGameStatus();
   }
 
   function play() {

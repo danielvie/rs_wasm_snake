@@ -110,6 +110,15 @@ impl World {
         self.status
     }
 
+    pub fn game_status_text(&self) -> String {
+        match self.status {
+            Some(GameStatus::Won) => "You have won!!".to_string(),
+            Some(GameStatus::Lost) => "You have lost!!".to_string(),
+            Some(GameStatus::Played) => "Playing".to_string(),
+            None => "No status".to_string(),
+        }
+    }
+
     pub fn change_snake_dir(&mut self, direction: Direction) {
         let next_cell = self.gen_next_snake_cell(&direction);
 
