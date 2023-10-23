@@ -3,7 +3,7 @@ import { rnd } from "./utils/rnd";
 
 init().then((wasm) => {
   const CELL_SIZE = 40;
-  const WORLD_WIDTH = 8;
+  const WORLD_WIDTH = 3;
   const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH);
 
   const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
@@ -30,6 +30,9 @@ init().then((wasm) => {
 
   document.addEventListener("keydown", (e) => {
     switch (e.code) {
+      case "Space":
+        gameControlBtn?.click();
+        break;
       case "ArrowUp":
         world.change_snake_dir(Direction.Up);
         break;
@@ -84,10 +87,6 @@ init().then((wasm) => {
 
     ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     ctx.stroke();
-
-    if (idx == 1000) {
-      alert("You won!!!");
-    }
   }
 
   function drawSnake() {
@@ -121,7 +120,7 @@ init().then((wasm) => {
   }
 
   function play() {
-    const fps = 5;
+    const fps = 3;
     setTimeout(() => {
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
       world.step();
