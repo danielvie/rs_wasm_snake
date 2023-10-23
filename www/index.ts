@@ -17,8 +17,14 @@ init().then((wasm) => {
   canvas.width = worldWidth * CELL_SIZE;
 
   gameControlBtn?.addEventListener("click", (_) => {
-    world.start_game();
-    play();
+    const gameStatus = world.game_status();
+    if (gameStatus === undefined) {
+      gameControlBtn.textContent = "Playing...";
+      world.start_game();
+      play();
+    } else {
+      location.reload();
+    }
   });
 
   document.addEventListener("keydown", (e) => {
@@ -83,9 +89,6 @@ init().then((wasm) => {
       world.snake_cells(),
       world.snake_lenght()
     );
-
-    const rcell = world.reward_cell();
-    console.log(`reward cell: ${rcell}`);
 
     snakeCells.forEach((cellIdx, i) => {
       const col = cellIdx % worldWidth;
