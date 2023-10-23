@@ -73,13 +73,8 @@ init().then((wasm) => {
       return;
     }
 
-    const status = world.game_status();
     gameStatus.textContent = world.game_status_text();
     points.textContent = world.points().toString();
-
-    if (status === GameStatus.Won || status === GameStatus.Lost) {
-      gameControlBtn.textContent = "Replay";
-    }
   }
 
   function drawReward() {
@@ -132,6 +127,16 @@ init().then((wasm) => {
   }
 
   function play() {
+    if (!gameControlBtn) {
+      return;
+    }
+    const status = world.game_status();
+
+    if (status === GameStatus.Won || status === GameStatus.Lost) {
+      gameControlBtn.textContent = "Replay";
+      return;
+    }
+
     const fps = 3;
     setTimeout(() => {
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
