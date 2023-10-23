@@ -107,7 +107,7 @@ init().then(wasm => {
   }
   
   function update() {
-    const fps = 3
+    const fps = 5
     setTimeout(() => {
       ctx?.clearRect(0, 0, canvas.width, canvas.height)
       world.step()
