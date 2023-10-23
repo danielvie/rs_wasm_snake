@@ -4,7 +4,7 @@ import  { rnd } from './utils/rnd'
 init().then(wasm => {
   
   const CELL_SIZE = 40
-  const WORLD_WIDTH = 8
+  const WORLD_WIDTH = 3
   const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH)
 
   const world = World.new(WORLD_WIDTH, snakeSpawnIdx)
@@ -70,6 +70,10 @@ init().then(wasm => {
       CELL_SIZE, 
     )
     ctx.stroke()
+    
+    if (idx == 1000) {
+      alert('You won!!!')
+    }
   }
   
   function drawSnake() {
@@ -80,6 +84,9 @@ init().then(wasm => {
       world.snake_cells(),
       world.snake_lenght()
     )
+    
+    const rcell = world.reward_cell()
+    console.log(`reward cell: ${rcell}`)
     
     snakeCells.forEach((cellIdx, i) => {
       const col = cellIdx % worldWidth
