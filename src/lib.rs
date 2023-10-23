@@ -6,48 +6,48 @@ use wee_alloc::WeeAlloc;
 static ALLOC: WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 // getting functioni from javascript
-#[wasm_bindgen(module="/www/utils/rnd.ts")]
-extern {
-  fn rnd(max: usize) -> usize;
+#[wasm_bindgen(module = "/www/utils/rnd.ts")]
+extern "C" {
+    fn rnd(max: usize) -> usize;
 }
 
 #[wasm_bindgen]
 #[derive(PartialEq)]
 pub enum Direction {
-  Up,
-  Right,
-  Down,
-  Left
+    Up,
+    Right,
+    Down,
+    Left,
 }
 
 #[wasm_bindgen]
 pub enum GameStatus {
-  Won,
-  Lost,
-  Played,
+    Won,
+    Lost,
+    Played,
 }
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct SnakeCell(usize);
 
 struct Snake {
-  body: Vec<SnakeCell>,
-  direction: Direction
+    body: Vec<SnakeCell>,
+    direction: Direction,
 }
 
 impl Snake {
-  fn  new(spawn_index: usize, size: usize) -> Snake {
-    let mut body = vec!();
-    
-    for i in 0..size {
-      body.push(SnakeCell(spawn_index - i));
-    }
+    fn new(spawn_index: usize, size: usize) -> Snake {
+        let mut body = vec![];
 
-    Snake {
-      body,
-      direction: Direction::Right
+        for i in 0..size {
+            body.push(SnakeCell(spawn_index - i));
+        }
+
+        Snake {
+            body,
+            direction: Direction::Right,
+        }
     }
-  }
 }
 
 #[wasm_bindgen]
@@ -62,142 +62,144 @@ pub struct World {
 
 #[wasm_bindgen]
 impl World {
-  pub fn new(width: usize, snake_idx: usize) -> World {
+    pub fn new(width: usize, snake_idx: usize) -> World {
+        let snake = Snake::new(snake_idx, 3);
+        let size = width * width;
 
-    let snake = Snake::new(snake_idx, 3);
-    let size = width * width;
-
-    World {
-      width,
-      size,
-      reward_cell: World::gen_reward_cell(size, &snake.body),
-      snake,
-      next_cell: None,
-      status: None,
-    }
-  }
-  
-  fn gen_reward_cell(max: usize, snake_body: &Vec<SnakeCell>) -> usize {
-    let mut reward_cell;
-    
-    loop {
-      reward_cell = rnd(max);
-      if !snake_body.contains(&SnakeCell(reward_cell)) { break; }
-    }
-    
-    reward_cell
-  }
-  
-  pub fn width(&self) -> usize {
-    self.width
-  }
-  
-  pub fn reward_cell(&self) -> usize {
-    self.reward_cell
-  }
-
-  pub fn snake_head_idx(&self) -> usize {
-    self.snake.body[0].0
-  }
-  
-  pub fn change_snake_dir(&mut self, direction: Direction) {
-    let next_cell = self.gen_next_snake_cell(&direction);
-
-    if self.snake.body[1].0 == next_cell.0 { return; }
-
-    self.next_cell = Some(next_cell);
-    self.snake.direction = direction;
-  }
-  
-  // *const is raw pointer
-  // borrowing rules doesnt apply to it
-  pub fn snake_cells(&self) -> *const SnakeCell {
-    self.snake.body.as_ptr()
-  }
-  
-  pub fn snake_lenght(&self) -> usize {
-    self.snake.body.len()
-  }
-  
-  // cannot return a reference to javascript because of borrowing rules
-  // pub fn snake_cells(&self) -> &Vec<SnakeCell> {
-  //   &self.snake.body
-  // }
-
-  pub fn step(&mut self) {
-    let temp = self.snake.body.clone();
-    
-    match self.status {
-      Some(GameStatus::Played) => {
-        match self.next_cell {
-          Some(cell) => {
-            self.snake.body[0] = cell;
-            self.next_cell = None;
-          },
-          None => {
-            self.snake.body[0] = self.gen_next_snake_cell(&self.snake.direction);
-          } 
+        World {
+            width,
+            size,
+            reward_cell: World::gen_reward_cell(size, &snake.body),
+            snake,
+            next_cell: None,
+            status: None,
         }
-        
-        let len = self.snake.body.len();
-        
-        for i in 1..len {
-          self.snake.body[i] = SnakeCell(temp[i-1].0);
-        }
-        
-        if self.reward_cell == self.snake_head_idx() {
-          if self.snake_lenght() < self.size {
-            self.reward_cell = World::gen_reward_cell(self.size, &self.snake.body);
-          } else {
-            self.reward_cell = 1000;
-          }
-
-          self.snake.body.push(SnakeCell(self.snake.body[1].0));
-        }
-      },
-      None => {},
-      _ => {}
     }
 
-  }
-  
-  fn gen_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
-    let snake_idx = self.snake_head_idx();
-    let row = snake_idx / self.width;
+    fn gen_reward_cell(max: usize, snake_body: &Vec<SnakeCell>) -> usize {
+        let mut reward_cell;
 
-    return match direction {
-      Direction::Right => {
-        let treshold = (row + 1) * self.width;
-        if snake_idx + 1 == treshold {
-          SnakeCell(treshold - self.width)
-        } else {
-          SnakeCell(snake_idx + 1)
+        loop {
+            reward_cell = rnd(max);
+            if !snake_body.contains(&SnakeCell(reward_cell)) {
+                break;
+            }
         }
-      },
-      Direction::Left => {
-        let treshold = row * self.width;
-        if snake_idx == treshold {
-          SnakeCell(treshold + (self.width - 1))
-        } else {
-          SnakeCell(snake_idx - 1)
+
+        reward_cell
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn reward_cell(&self) -> usize {
+        self.reward_cell
+    }
+
+    pub fn snake_head_idx(&self) -> usize {
+        self.snake.body[0].0
+    }
+
+    pub fn change_snake_dir(&mut self, direction: Direction) {
+        let next_cell = self.gen_next_snake_cell(&direction);
+
+        if self.snake.body[1].0 == next_cell.0 {
+            return;
         }
-      },
-      Direction::Up => {
-        let treshold = snake_idx - (row * self.width);
-        if snake_idx == treshold {
-          SnakeCell((self.size - self.width) + treshold)
-        } else {
-          SnakeCell(snake_idx - self.width)
+
+        self.next_cell = Some(next_cell);
+        self.snake.direction = direction;
+    }
+
+    // *const is raw pointer
+    // borrowing rules doesnt apply to it
+    pub fn snake_cells(&self) -> *const SnakeCell {
+        self.snake.body.as_ptr()
+    }
+
+    pub fn snake_lenght(&self) -> usize {
+        self.snake.body.len()
+    }
+
+    // cannot return a reference to javascript because of borrowing rules
+    // pub fn snake_cells(&self) -> &Vec<SnakeCell> {
+    //   &self.snake.body
+    // }
+
+    pub fn step(&mut self) {
+        let temp = self.snake.body.clone();
+
+        match self.status {
+            Some(GameStatus::Played) => {
+                match self.next_cell {
+                    Some(cell) => {
+                        self.snake.body[0] = cell;
+                        self.next_cell = None;
+                    }
+                    None => {
+                        self.snake.body[0] = self.gen_next_snake_cell(&self.snake.direction);
+                    }
+                }
+
+                let len = self.snake.body.len();
+
+                for i in 1..len {
+                    self.snake.body[i] = SnakeCell(temp[i - 1].0);
+                }
+
+                if self.reward_cell == self.snake_head_idx() {
+                    if self.snake_lenght() < self.size {
+                        self.reward_cell = World::gen_reward_cell(self.size, &self.snake.body);
+                    } else {
+                        self.reward_cell = 1000;
+                    }
+
+                    self.snake.body.push(SnakeCell(self.snake.body[1].0));
+                }
+            }
+            None => {}
+            _ => {}
         }
-      },
-      Direction::Down => {
-        let treshold = snake_idx + ((self.width - row) * self.width);
-        if snake_idx + self.width == treshold {
-          SnakeCell(treshold - ((row + 1) * self.width))
-        } else {
-          SnakeCell(snake_idx + self.width)
-        }
-      },
-    };
-  }
+    }
+
+    fn gen_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
+        let snake_idx = self.snake_head_idx();
+        let row = snake_idx / self.width;
+
+        return match direction {
+            Direction::Right => {
+                let treshold = (row + 1) * self.width;
+                if snake_idx + 1 == treshold {
+                    SnakeCell(treshold - self.width)
+                } else {
+                    SnakeCell(snake_idx + 1)
+                }
+            }
+            Direction::Left => {
+                let treshold = row * self.width;
+                if snake_idx == treshold {
+                    SnakeCell(treshold + (self.width - 1))
+                } else {
+                    SnakeCell(snake_idx - 1)
+                }
+            }
+            Direction::Up => {
+                let treshold = snake_idx - (row * self.width);
+                if snake_idx == treshold {
+                    SnakeCell((self.size - self.width) + treshold)
+                } else {
+                    SnakeCell(snake_idx - self.width)
+                }
+            }
+            Direction::Down => {
+                let treshold = snake_idx + ((self.width - row) * self.width);
+                if snake_idx + self.width == treshold {
+                    SnakeCell(treshold - ((row + 1) * self.width))
+                } else {
+                    SnakeCell(snake_idx + self.width)
+                }
+            }
+        };
+    }
 }
