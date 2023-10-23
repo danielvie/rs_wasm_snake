@@ -6,9 +6,9 @@ use wee_alloc::WeeAlloc;
 static ALLOC: WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 // getting functioni from javascript
-#[wasm_bindgen(module="/www/utils/date.ts")]
+#[wasm_bindgen(module="/www/utils/rnd.ts")]
 extern {
-  fn now() -> usize;
+  fn rnd(max: usize) -> usize;
 }
 
 #[wasm_bindgen]
@@ -58,7 +58,7 @@ impl World {
 
 
     let size = width * width;
-    let reward_cell = now() % size;
+    let reward_cell = rnd(size);
 
     World {
       width,
