@@ -3,7 +3,7 @@ import { rnd } from "./utils/rnd";
 
 init().then((wasm) => {
   const CELL_SIZE = 40;
-  const WORLD_WIDTH = 3;
+  const WORLD_WIDTH = 7;
   const snakeSpawnIdx = rnd(WORLD_WIDTH * WORLD_WIDTH);
 
   const world = World.new(WORLD_WIDTH, snakeSpawnIdx);
@@ -98,15 +98,17 @@ init().then((wasm) => {
       world.snake_lenght()
     );
 
-    snakeCells.forEach((cellIdx, i) => {
-      const col = cellIdx % worldWidth;
-      const row = Math.floor(cellIdx / worldWidth);
+    snakeCells
+      .filter((cellIdx, i) => !(i > 0 && cellIdx === snakeCells[0]))
+      .forEach((cellIdx, i) => {
+        const col = cellIdx % worldWidth;
+        const row = Math.floor(cellIdx / worldWidth);
 
-      ctx.fillStyle = i === 0 ? "#7878bd" : "#6699ff";
+        ctx.fillStyle = i === 0 ? "#7878bd" : "#6699ff";
 
-      ctx.beginPath();
-      ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-    });
+        ctx.beginPath();
+        ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      });
 
     // const snakeIdx = world.snake_head_idx()
     ctx.stroke();
