@@ -1,8 +1,15 @@
 use wasm_bindgen::prelude::*;
+use wee_alloc::WeeAlloc;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+static ALLOC: WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+// getting functioni from javascript
+#[wasm_bindgen(module="/www/utils/date.ts")]
+extern {
+  fn now() -> usize;
+}
 
 #[wasm_bindgen]
 #[derive(PartialEq)]
@@ -48,12 +55,17 @@ pub struct World {
 #[wasm_bindgen]
 impl World {
   pub fn new(width: usize, snake_idx: usize) -> World {
+
+
+    let size = width * width;
+    let reward_cell = now() % size;
+
     World {
       width,
-      size: width * width,
+      size,
       snake: Snake::new(snake_idx, 3),
       next_cell: None,
-      reward_cell: 24,
+      reward_cell,
     }
   }
   
