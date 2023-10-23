@@ -76,9 +76,12 @@ init().then((wasm) => {
   }
 
   function drawReward() {
-    if (!ctx) return;
-
     const idx = world.reward_cell();
+
+    if (!idx || !ctx) {
+      return;
+    }
+
     const col = idx % worldWidth;
     const row = Math.floor(idx / worldWidth);
 
